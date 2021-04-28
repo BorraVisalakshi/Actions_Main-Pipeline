@@ -1,0 +1,45 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+  #Checkout the code
+    - name: Step-1 Checkout the Code
+      uses: actions/checkout@v2
+    
+  #Build with Maven Goals
+    - name: Step-2 Build with Maven
+      run: mvn clean install
+      
+  #Zip the code
+    - name: Step-3 Zip the Source code
+      uses: papeloto/action-zip@v1
+      with:
+          dest: SampleWeb.zip
+          
+  #Verify the Zip folder
+    - name: Step-4 Verify Directory
+      run: dir
+      
+  #Move the Zip to D: drive
+    - name: Step-5 Move Directory to D drive
+      run: move SampleWeb.zip D:\Actions
+      
+  #Deploy to tomcat
+    - name: Step-6 Deploy to Tomcat
+      run: mvn tomcat7:deploy
+      
+  #Deploy to Weblogic
+    - name: Step-7  Deploy to Weblogic
+      run: mvn weblogic:deploy
+  
+  

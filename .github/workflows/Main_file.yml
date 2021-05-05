@@ -29,7 +29,7 @@ jobs:
     - name: Step-3 Zip the Source code
       uses: papeloto/action-zip@v1
       with:
-          dest: SampleWeb.zip
+          dest: SampleWebApp.zip
           
   #Verify the Zip folder
     - name: Step-4 Verify Directory
@@ -37,7 +37,7 @@ jobs:
       
   #Move the Zip to D: drive
     - name: Step-5 Move Directory to D drive
-      run: move SampleWeb.zip D:\Actions
+      run: move SampleWebApp.zip D:\Actions
       
   #Deploy to tomcat
     - name: Step-6 Deploy to Tomcat

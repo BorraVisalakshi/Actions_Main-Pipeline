@@ -7,7 +7,8 @@ on:
   push:
     branches: [ main ]
 jobs:
-  build:
+
+  one:
 
     runs-on: self-hosted
 
@@ -23,7 +24,7 @@ jobs:
   # Upload to artifactory
     - name: Upload to Artifactory
       run:  Remove-item alias:curl;
-            curl -X PUT -u ${{ secrets.USER }}:${{ secrets.PASSWORD }} -T C:\Pipeline_Main\ActionsRunner\PipelineMain\Actions_Main-Pipeline\Actions_Main-Pipeline\target\HelloWorld.war "http://localhost:8082/artifactory/CG-libs-release-local/HelloWorld.war"
+            curl -X PUT -u ${{ secrets.USERNAME }}:${{ secrets.PASSWORD }} -T C:\Pipeline_Main\ActionsRunner\PipelineMain\Actions_Main-Pipeline\Actions_Main-Pipeline\target\HelloWorld.war "http://localhost:8082/artifactory/CG-libs-release-local/HelloWorld.war"
 
   #Zip the code
     - name: Step-3 Zip the Source code
@@ -40,11 +41,83 @@ jobs:
       run: move SampleWebApp.zip D:\Actions
       
   #Deploy to tomcat
-    - name: Step-6 Deploy to Tomcat
-      run: mvn tomcat7:deploy
+ #   - name: Step-6 Deploy to Tomcat
+ #     run: mvn tomcat7:deploy
       
   #Deploy to Weblogic
-    - name: Step-7  Deploy to Weblogic
-      run: mvn weblogic:deploy
+  #  - name: Step-7  Deploy to Weblogic
+  #    run: mvn weblogic:deploy
+      
+  #Copy to local System from Remote Server
+    - name: Copy to local      
+      run: scp -o  StrictHostKeyChecking=no -i C:\Users\trbor\Downloads\POC_AWS.pem ${{ secrets.USER }}@${{ secrets.HOST }}:/home/ec2-user/GitHub_Actions/SubmissionDataForm-0.0.1-SNAPSHOT.jar D:\Actions\
+  
+  two:
+  
+   runs-on: ubuntu-latest
+   needs: one
+   
+   steps:
+   
+   #Checkout the code
+    
+   - name: Checkout the code
+     uses: actions/checkout@v2
+   
+   - name: Build with maven
+     run: 
+          mvn clean;
+          mvn install;
+          
+  #Velify the all the folders in Main Directory     
+   - name: Operations
+     uses: fifsky/ssh-action@master
+     with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+          user: ${{ secrets.USER }}
+          command: 
+                  sudo su;
+                  ls -a;
+            
+  #Copy via SCP to remote repository ec2           
+   - name: copy file via ssh password
+     uses: noobly314/deploy-with-scp@v1
+     with:
+        server-ip: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.USER }}
+        ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.PORT }}
+        src: "/home/runner/work/Actions_Main-Pipeline/Actions_Main-Pipeline/target/HelloWorld.war"
+        dest: "/home/ec2-user/GitHub_Actions/" 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   

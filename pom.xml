@@ -87,9 +87,9 @@
         <executions> 
             <execution> 
                 <phase>install</phase> 
-                <goals> 
+             <!--   <goals> 
                     <goal>deploy</goal> 
-                </goals> 
+                </goals> -->
             </execution> 
         </executions> 
     </plugin> 
